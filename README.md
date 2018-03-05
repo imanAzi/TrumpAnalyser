@@ -1,0 +1,2 @@
+# TrumpAnalyser
+init
