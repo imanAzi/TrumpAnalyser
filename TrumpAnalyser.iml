@@ -11,6 +11,8 @@
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/../Trump_Twitter_Analytics/target" />
     </content>
+    <content url="file://$MODULE_DIR$/../Trump_Twitter_Analytics/src/test/java" />
+    <content url="file://$MODULE_DIR$/../Trump_Twitter_Analytics/src/test/resources" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-mllib_2.11:2.2.0" level="project" />
