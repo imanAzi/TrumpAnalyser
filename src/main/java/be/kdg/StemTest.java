@@ -12,7 +12,7 @@ public class StemTest {
             String stemmed = stemmer.stem(string);
             System.out.println(stemmed);
         }
-        
+
         // allies -> alli ???
         // says -> sai ????
         // congratul -> congratulations
