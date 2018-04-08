@@ -7,6 +7,7 @@ import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.twitter.TwitterUtils;
+import org.tartarus.snowball.ext.PorterStemmer;
 import twitter4j.Status;
 import twitter4j.auth.Authorization;
 import twitter4j.auth.AuthorizationFactory;
@@ -44,6 +45,7 @@ public class StartMain {
         String[] filters = {"#Trump", "#trump"};
 
         Stemmer stemmer = new Stemmer();
+        //PorterStemmer stemmer = new PorterStemmer();
 
         JavaReceiverInputDStream<Status> twitterStream = TwitterUtils.createStream(jssc, twitterAuth, filters);
 
@@ -66,6 +68,7 @@ public class StartMain {
                         }
                         text = text.replaceAll("[\\p{Punct}&&[^#]]+", "");
                         text = stemmer.stem(text);
+                        //text=stemmer.stem();
                         String str = removeStopwords(text);
                         //str = str.replaceAll("[^a-zA-Z0-9 ]+", "");
                         sb.append(str);
