@@ -1,6 +1,5 @@
 package be.kdg;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.streaming.Duration;
@@ -9,15 +8,19 @@ import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.twitter.TwitterUtils;
 import twitter4j.Status;
-import twitter4j.User;
 import twitter4j.auth.Authorization;
 import twitter4j.auth.AuthorizationFactory;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationContext;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+
 
 public class StartMain {
 
@@ -40,14 +43,14 @@ public class StartMain {
 
         String[] filters = {"#Trump", "#trump"};
 
+        Stemmer stemmer = new Stemmer();
+
         JavaReceiverInputDStream<Status> twitterStream = TwitterUtils.createStream(jssc, twitterAuth, filters);
 
         JavaDStream<String> statuses = twitterStream.map(
                 new Function<Status, String>() {
                     public String call(Status status) {
-
                         StringBuilder sb = new StringBuilder();
-                        //sb.append("Username: ");
                         sb.append(status.getUser().getScreenName());
                         sb.append("\n");
                         sb.append(status.getCreatedAt().toString());
@@ -56,32 +59,59 @@ public class StartMain {
                         sb.append("\n");
                         String text;
                         if (status.isRetweet()) {
-                            text = status.getRetweetedStatus().getText();
+                            text = status.getRetweetedStatus().getText().toLowerCase();
                         }
                         else {
-                            text = status.getText();
+                            text = status.getText().toLowerCase();
                         }
-
-                        String str = text.replaceAll("[^a-zA-Z0-9 ]+","");
+                        text = text.replaceAll("[\\p{Punct}&&[^#]]+", "");
+                        text = stemmer.stem(text);
+                        String str = removeStopwords(text);
+                        //str = str.replaceAll("[^a-zA-Z0-9 ]+", "");
                         sb.append(str);
                         return sb.toString();
                     }
                 }
         );
 
+/*        JavaDStream<String> stemmed = statuses.map(str -> {
+            return stemmer.stem(str);
+        });*/
+
         statuses.dstream().saveAsTextFiles("file:///C:/BigDataStreaming/TrumpStream", "txt");
 
-        //removeStopwords();
-
-/*        jssc.start();
+        jssc.start();
         try {
             jssc.awaitTermination();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
+    private static String removeStopwords(String input) {
+        List<String> stopwords = new ArrayList<>();
+        String line = "";
+        File file = new File("C:\\Users\\FLO\\Google Drive\\KdG\\ETL, NoSQL & Big Data 2\\Examen\\TrumpAnalyser\\src\\main\\java\\be\\kdg\\stopwords.txt");
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            while (line != null) {
+                line = br.readLine();
+                stopwords.add(line);
+            }
+        } catch (Exception e) {
 
+        }
+
+        List<String> words = Arrays.asList(input.split(" "));
+        List<String> arrayList = new ArrayList<>(words);
+        arrayList.removeAll(stopwords);
+        StringBuilder sb = new StringBuilder();
+        for (String word : arrayList) {
+            sb.append(word);
+            sb.append(" ");
+        }
+        return sb.toString();
     }
+}
 
 
