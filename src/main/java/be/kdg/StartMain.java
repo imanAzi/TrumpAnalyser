@@ -1,5 +1,6 @@
 package be.kdg;
 
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.streaming.Duration;
@@ -66,10 +67,10 @@ public class StartMain {
                         else {
                             text = status.getText().toLowerCase();
                         }
-                        text = text.replaceAll("[\\p{Punct}&&[^#]]+", "");
-                        text = stemmer.stem(text);
-                        //text=stemmer.stem();
+                        //text = text.replaceAll("[\\p{Punct}&&[^#]]+", "");
+                        text = text.replaceAll("[^\\w\\#\\s\\d]+", "");
                         String str = removeStopwords(text);
+                        //List<String> words = IteratorUtils.
                         //str = str.replaceAll("[^a-zA-Z0-9 ]+", "");
                         sb.append(str);
                         return sb.toString();
@@ -77,9 +78,7 @@ public class StartMain {
                 }
         );
 
-/*        JavaDStream<String> stemmed = statuses.map(str -> {
-            return stemmer.stem(str);
-        });*/
+        //JavaDStream<String> stemmed = statuses.map(str -> stemmer.stem(str));
 
         statuses.dstream().saveAsTextFiles("file:///C:/BigDataStreaming/TrumpStream", "txt");
 
