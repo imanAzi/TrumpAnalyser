@@ -50,6 +50,9 @@ public class StartMain {
         JavaDStream<String> statuses = twitterStream.map(
                 new Function<Status, String>() {
                     public String call(Status status) {
+/*                        if (status.isRetweet()) {
+                            return "";
+                        }*/
                         StringBuilder sb = new StringBuilder();
                         sb.append(status.getUser().getScreenName());
                         sb.append("\n");
@@ -60,9 +63,13 @@ public class StartMain {
                         String text;
                         if (status.isRetweet()) {
                             text = status.getRetweetedStatus().getText().toLowerCase();
+                            sb.append("isRetweet");
+
                         } else {
                             text = status.getText().toLowerCase();
+                            sb.append("isTweet");
                         }
+                        sb.append("\n");
                         text = text.replaceAll("[^\\w\\#\\s\\d]+", "");
                         text = removeStopwords(text);
 
@@ -72,6 +79,9 @@ public class StartMain {
                             sb.append(stemmer.stem(s));
                             sb.append(" ");
                         }
+
+
+
                         return sb.toString();
                     }
                 }
@@ -82,15 +92,15 @@ public class StartMain {
                     public Iterator<String> call(String input) {
                         String[] strArray = input.split("\n");
                         List<String> words = new ArrayList<>();
-                        for (String s : strArray[3].split(" ")) {
+                        for (String s : strArray[4].split(" ")) {
                             String isHashtag = "";
                             if (s.startsWith("#")) {
                                 isHashtag = "isHashtag";
                                 s = s.replaceAll("#", "");
                             }
-                            if(!s.startsWith("http")){
+                            if (!s.startsWith("http")) {
                                 words.add(s + "\n" + strArray[0] + "\n" + strArray[1] + "\n" +
-                                        strArray[2] + "\n" + isHashtag + "\n\n");
+                                        strArray[2] + "\n"+ strArray[3]+ "\n"+isHashtag + "\n\n");
                             }
                         }
                         return words.iterator();
