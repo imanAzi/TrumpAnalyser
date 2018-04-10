@@ -1,14 +1,13 @@
 package be.kdg;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.twitter.TwitterUtils;
-import org.tartarus.snowball.ext.PorterStemmer;
 import twitter4j.Status;
 import twitter4j.auth.Authorization;
 import twitter4j.auth.AuthorizationFactory;
@@ -20,8 +19,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-
 
 
 public class StartMain {
@@ -44,9 +43,7 @@ public class StartMain {
         Authorization twitterAuth = AuthorizationFactory.getInstance(twitterConf);
 
         String[] filters = {"#Trump", "#trump"};
-
         Stemmer stemmer = new Stemmer();
-        //PorterStemmer stemmer = new PorterStemmer();
 
         JavaReceiverInputDStream<Status> twitterStream = TwitterUtils.createStream(jssc, twitterAuth, filters);
 
@@ -63,24 +60,46 @@ public class StartMain {
                         String text;
                         if (status.isRetweet()) {
                             text = status.getRetweetedStatus().getText().toLowerCase();
-                        }
-                        else {
+                        } else {
                             text = status.getText().toLowerCase();
                         }
-                        //text = text.replaceAll("[\\p{Punct}&&[^#]]+", "");
                         text = text.replaceAll("[^\\w\\#\\s\\d]+", "");
-                        String str = removeStopwords(text);
-                        //List<String> words = IteratorUtils.
-                        //str = str.replaceAll("[^a-zA-Z0-9 ]+", "");
-                        sb.append(str);
+                        text = removeStopwords(text);
+
+                        String[] strArray = text.split(" ");
+                        for (String s : strArray) {
+                            s.trim();
+                            sb.append(stemmer.stem(s));
+                            sb.append(" ");
+                        }
                         return sb.toString();
                     }
                 }
         );
 
-        //JavaDStream<String> stemmed = statuses.map(str -> stemmer.stem(str));
+        JavaDStream<String> stemmedWords = statuses.flatMap(
+                new FlatMapFunction<String, String>() {
+                    public Iterator<String> call(String input) {
+                        String[] strArray = input.split("\n");
+                        List<String> words = new ArrayList<>();
+                        for (String s : strArray[3].split(" ")) {
+                            String isHashtag = "";
+                            if (s.startsWith("#")) {
+                                isHashtag = "isHashtag";
+                                s = s.replaceAll("#", "");
+                            }
+                            if(!s.startsWith("http")){
+                                words.add(s + "\n" + strArray[0] + "\n" + strArray[1] + "\n" +
+                                        strArray[2] + "\n" + isHashtag + "\n\n");
+                            }
+                        }
+                        return words.iterator();
+                    }
+                });
 
-        statuses.dstream().saveAsTextFiles("file:///C:/BigDataStreaming/TrumpStream", "txt");
+        //JavaDStream<String> splitted = stemmedWords.flatMap(x -> Arrays.asList(x.split("////")).iterator());
+
+        stemmedWords.dstream().saveAsTextFiles("file:///C:/BigDataStreaming/TrumpStream", "txt");
 
         jssc.start();
         try {
@@ -101,7 +120,7 @@ public class StartMain {
                 stopwords.add(line);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         List<String> words = Arrays.asList(input.split(" "));
@@ -109,6 +128,7 @@ public class StartMain {
         arrayList.removeAll(stopwords);
         StringBuilder sb = new StringBuilder();
         for (String word : arrayList) {
+            word.trim();
             sb.append(word);
             sb.append(" ");
         }

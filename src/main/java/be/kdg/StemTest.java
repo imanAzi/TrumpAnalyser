@@ -6,7 +6,7 @@ package be.kdg;
 public class StemTest {
     public static void main(String[] args) {
         Stemmer stemmer = new Stemmer();
-        String[] strings = {"cats", "allies", "congratulations", "says"};
+        String[] strings = {"cats", "allies", "congratulations", "says", "deleted", "delete", "deleting", "smart"};
 
         for (String string : strings) {
             String stemmed = stemmer.stem(string);
