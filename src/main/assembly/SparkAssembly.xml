@@ -17,6 +17,7 @@
                 <include>org.twitter4j*</include>
                 <include>org.apache.bahir:spark-streaming-twitter_2.11</include>
                 <include>be.kdg*</include>
+                <include>edu.stanford.nlp:stanford-corenlp_3.9.1</include>
             </includes>
         </dependencySet>
     </dependencySets>
