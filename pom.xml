@@ -71,11 +71,29 @@
             <version>0.2.0</version>
         </dependency>-->
 
-        <dependency>
+<!--        <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
             <version>3.9.1</version>
             <classifier>models-english</classifier>
+        </dependency>-->
+<!--
+        <dependency>
+            <groupId>org.tartarus</groupId>
+            <artifactId>snowball</artifactId>
+            <version>1.0</version>
+        </dependency>-->
+
+<!--        <dependency>
+            <groupId>com.github.master</groupId>
+            <artifactId>spark-stemming_2.10</artifactId>
+            <version>0.2.0</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>4.10.3</version>
         </dependency>
 
     </dependencies>
