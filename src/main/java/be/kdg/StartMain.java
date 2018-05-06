@@ -94,8 +94,8 @@ public class StartMain {
                             isHashtag = "No";
                         }
                         if (!s.startsWith("http")) {
-                            words.add(s + "\n" + strArray[0] + "\n" + strArray[1] + "\n" +
-                                    strArray[2] + "\n" + isHashtag + "\n\n");
+                            words.add(s + ";" + strArray[0] + ";" + strArray[1] + ";" +
+                                    strArray[2] + ";" + isHashtag + "\n");
                         }
                     }
                     return words.iterator();
