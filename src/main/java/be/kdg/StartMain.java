@@ -95,7 +95,7 @@ public class StartMain {
                         }
                         if (!s.startsWith("http")) {
                             words.add(s + ";" + strArray[0] + ";" + strArray[1] + ";" +
-                                    strArray[2] + ";" + isHashtag + "\n");
+                                    strArray[2] + ";" + isHashtag);
                         }
                     }
                     return words.iterator();
