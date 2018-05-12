@@ -40,7 +40,7 @@ public class StartMain {
         String output_sentiment = args[2];
 
         if (args[3].matches("\\d+")) {
-            batchDuration = Integer.parseInt(args[4]);
+            batchDuration = Integer.parseInt(args[3]);
         }
 
         SparkConf conf = new SparkConf().setAppName("TrumpAnalyzer");
