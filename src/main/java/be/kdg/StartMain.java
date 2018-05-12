@@ -39,7 +39,7 @@ public class StartMain {
         String output_keywords = args[1];
         String output_sentiment = args[2];
 
-        if (args[4].matches("\\d+")) {
+        if (args[3].matches("\\d+")) {
             batchDuration = Integer.parseInt(args[4]);
         }
 
